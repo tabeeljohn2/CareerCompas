@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 
 // Example options. In Phase 4 these must match the features your model is trained on.
 const EDUCATION = ["High school", "Bachelor's (in progress)", "Bachelor's", "Master's", "Other"];
@@ -65,6 +66,9 @@ export default function ProfileWizard() {
         <p className="mt-2 text-gray-400">
           In Phase 3 this will be sent to the backend to get your career recommendations.
         </p>
+        <Link href="/results" className="mt-4 inline-block rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-500">
+  View sample results
+</Link>
       </div>
     );
   }
