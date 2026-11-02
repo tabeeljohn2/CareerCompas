@@ -4,4 +4,5 @@
 __pycache__/
 *.keras
 node_modules/
-.next/*.db
+.next/
+*.db
