@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getToken, submitProfile } from "../lib/api";
 
 // Example options. In Phase 4 these must match the features your model is trained on.
 const EDUCATION = ["High school", "Bachelor's (in progress)", "Bachelor's", "Master's", "Other"];
@@ -33,13 +34,19 @@ function Chips({ options, selected, onToggle }: {
 }
 
 export default function ProfileWizard() {
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const [education, setEducation] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [interests, setInterests] = useState<string[]>([]);
   const [goals, setGoals] = useState("");
   const [error, setError] = useState("");
-  const [done, setDone] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Only logged-in users can use the wizard
+  useEffect(() => {
+    if (!getToken()) router.push("/login");
+  }, [router]);
 
   function validate(): string {
     if (step === 0 && !education) return "Please choose your education level.";
@@ -49,28 +56,27 @@ export default function ProfileWizard() {
     return "";
   }
 
-  function next() {
+  async function next() {
     const msg = validate();
     setError(msg);
     if (msg) return;
     if (step < 3) return setStep(step + 1);
-    const profile = { education_level: education, skills, interests, goals };
-    console.log("Will send to the backend in Phase 3:", profile);
-    setDone(true);
-  }
 
-  if (done) {
-    return (
-      <div className="mx-auto mt-12 max-w-lg px-4">
-        <h1 className="text-2xl font-bold">Profile saved (locally)</h1>
-        <p className="mt-2 text-gray-400">
-          In Phase 3 this will be sent to the backend to get your career recommendations.
-        </p>
-        <Link href="/results" className="mt-4 inline-block rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-500">
-  View sample results
-</Link>
-      </div>
-    );
+    setLoading(true);
+    try {
+      await submitProfile({ education_level: education, skills, interests, goals });
+      router.push("/results");
+    } catch (err) {
+      const m = (err as Error).message;
+      if (m === "NOT_LOGGED_IN") return router.push("/login");
+      setError(
+        err instanceof TypeError
+          ? "Cannot reach the server. Is the backend running?"
+          : m
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -117,14 +123,14 @@ export default function ProfileWizard() {
       {error && <p className="text-sm text-red-400">{error}</p>}
 
       <div className="flex justify-between">
-        <button type="button" disabled={step === 0}
+        <button type="button" disabled={step === 0 || loading}
           onClick={() => { setError(""); setStep(step - 1); }}
           className="rounded border border-gray-600 px-4 py-2 disabled:opacity-40">
           Back
         </button>
-        <button type="button" onClick={next}
-          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-500">
-          {step === 3 ? "Finish" : "Next"}
+        <button type="button" onClick={next} disabled={loading}
+          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-500 disabled:opacity-50">
+          {loading ? "Finding your matches..." : step === 3 ? "Finish" : "Next"}
         </button>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import type { Career } from "../lib/sampleData";
+import type { Career } from "../lib/api";
 
 export default function CareerCard({ career }: { career: Career }) {
   return (

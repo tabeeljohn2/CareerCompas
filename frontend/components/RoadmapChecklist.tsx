@@ -1,15 +1,27 @@
 "use client";
 import { useState } from "react";
-import type { RoadmapStep } from "../lib/sampleData";
+import { setProgress, type RoadmapItem } from "../lib/api";
 
-export default function RoadmapChecklist({ steps }: { steps: RoadmapStep[] }) {
-  const [doneIds, setDoneIds] = useState<number[]>([]);
+export default function RoadmapChecklist({ initialItems }: { initialItems: RoadmapItem[] }) {
+  const [items, setItems] = useState<RoadmapItem[]>(initialItems);
+  const [error, setError] = useState("");
 
-  function toggle(id: number) {
-    setDoneIds(doneIds.includes(id) ? doneIds.filter((x) => x !== id) : [...doneIds, id]);
+  async function toggle(item: RoadmapItem) {
+    const newValue = !item.is_done;
+    setError("");
+    setItems(items.map((i) => (i.id === item.id ? { ...i, is_done: newValue } : i)));
+    try {
+      await setProgress(item.id, newValue);
+    } catch {
+      setItems((current) =>
+        current.map((i) => (i.id === item.id ? { ...i, is_done: item.is_done } : i))
+      );
+      setError("Could not save your progress. Please try again.");
+    }
   }
 
-  const percent = Math.round((doneIds.length / steps.length) * 100);
+  const doneCount = items.filter((i) => i.is_done).length;
+  const percent = items.length ? Math.round((doneCount / items.length) * 100) : 0;
 
   return (
     <div>
@@ -18,15 +30,16 @@ export default function RoadmapChecklist({ steps }: { steps: RoadmapStep[] }) {
         <div className="h-2 rounded bg-green-600" style={{ width: `${percent}%` }} />
       </div>
       <ul className="mt-4 space-y-2">
-        {steps.map((s) => (
-          <li key={s.id}>
+        {items.map((i) => (
+          <li key={i.id}>
             <label className="flex cursor-pointer items-center gap-3">
-              <input type="checkbox" checked={doneIds.includes(s.id)} onChange={() => toggle(s.id)} />
-              <span className={doneIds.includes(s.id) ? "text-gray-500 line-through" : ""}>{s.title}</span>
+              <input type="checkbox" checked={i.is_done} onChange={() => toggle(i)} />
+              <span className={i.is_done ? "text-gray-500 line-through" : ""}>{i.title}</span>
             </label>
           </li>
         ))}
       </ul>
+      {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
     </div>
   );
 }
