@@ -1,11 +1,11 @@
-import random
+﻿import random
 import sys
 from pathlib import Path
 
 import pandas as pd
 
 # Reuse the backend's career definitions
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from career_data import CAREERS, SKILLS, INTERESTS, EDUCATION
 
 random.seed(42)
