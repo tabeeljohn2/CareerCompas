@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+﻿from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import json
@@ -9,6 +9,7 @@ import jwt as pyjwt
 
 from database import Base, engine, get_db
 from models import User, UserProfile, Recommendation, ProgressItem
+from ml_inference import recommend_careers_smart
 from recommender import recommend_careers, build_roadmap
 from security import hash_password, verify_password, create_token, decode_token
 from advisor import get_advice
@@ -118,7 +119,7 @@ def recommend(body: ProfileIn, user: User = Depends(get_current_user),
     profile.updated_at = datetime.now(timezone.utc)
 
     # 2. Rank careers (placeholder, replaced in Phase 4)
-    careers = recommend_careers(body.skills, body.interests)
+    careers = recommend_careers_smart(body.education_level, body.skills, body.interests)
     advice = get_advice(body.education_level, body.skills, body.interests, body.goals, careers)
 
     # 3. Save the recommendation and its roadmap steps
