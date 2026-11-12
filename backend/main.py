@@ -11,6 +11,7 @@ from database import Base, engine, get_db
 from models import User, UserProfile, Recommendation, ProgressItem
 from recommender import recommend_careers, build_roadmap
 from security import hash_password, verify_password, create_token, decode_token
+from advisor import get_advice
 
 Base.metadata.create_all(bind=engine)  # creates tables on first run
 
@@ -118,17 +119,18 @@ def recommend(body: ProfileIn, user: User = Depends(get_current_user),
 
     # 2. Rank careers (placeholder, replaced in Phase 4)
     careers = recommend_careers(body.skills, body.interests)
+    advice = get_advice(body.education_level, body.skills, body.interests, body.goals, careers)
 
     # 3. Save the recommendation and its roadmap steps
-    rec = Recommendation(user_id=user.id, careers_json=json.dumps(careers))
+    rec = Recommendation(user_id=user.id, careers_json=json.dumps(careers), advice_text=advice)
     db.add(rec)
     db.flush()  # gives rec an id
     for title in build_roadmap(careers[0]):
         db.add(ProgressItem(recommendation_id=rec.id, title=title))
     db.commit()
 
-    return {"recommendation_id": rec.id, "careers": careers,
-            "roadmap": roadmap_for(db, rec.id)}
+    return {"recommendation_id": rec.id, "careers": json.loads(rec.careers_json),
+            "advice": rec.advice_text, "roadmap": roadmap_for(db, rec.id)}
 
 
 @app.get("/api/recommendations/latest")

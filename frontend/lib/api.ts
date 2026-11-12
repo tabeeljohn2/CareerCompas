@@ -39,6 +39,7 @@ export type RoadmapItem = { id: number; title: string; is_done: boolean };
 export type RecommendationResult = {
   recommendation_id: number;
   careers: Career[];
+  advice: string | null;
   roadmap: RoadmapItem[];
 };
 export type ProfileInput = {

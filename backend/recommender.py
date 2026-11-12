@@ -1,22 +1,5 @@
-# PLACEHOLDER ranking based on overlap. Replaced by the TensorFlow model in Phase 4.
-CAREERS = {
-    "Data Analyst": {"skills": ["Python", "SQL", "Excel", "Data analysis"],
-                     "interests": ["Business", "Finance", "Science", "Technology"]},
-    "Software Developer": {"skills": ["Python", "JavaScript", "SQL"],
-                           "interests": ["Technology", "Science"]},
-    "Machine Learning Engineer": {"skills": ["Python", "Machine learning", "Data analysis"],
-                                  "interests": ["Technology", "Science"]},
-    "UX Designer": {"skills": ["Design", "Communication", "Writing"],
-                    "interests": ["Art & design", "Technology", "Media"]},
-    "Product Manager": {"skills": ["Communication", "Project management", "Data analysis"],
-                        "interests": ["Business", "Technology"]},
-    "Content Strategist": {"skills": ["Writing", "Communication", "Design"],
-                           "interests": ["Media", "Education", "Business"]},
-    "Financial Analyst": {"skills": ["Excel", "Data analysis", "SQL"],
-                          "interests": ["Finance", "Business"]},
-    "Health Data Specialist": {"skills": ["SQL", "Data analysis", "Excel"],
-                               "interests": ["Healthcare", "Science"]},
-}
+# PLACEHOLDER ranking based on overlap. Replaced by the TensorFlow model in Phase 4C.
+from career_data import CAREERS
 
 
 def recommend_careers(skills: list[str], interests: list[str], top_n: int = 3) -> list[dict]:

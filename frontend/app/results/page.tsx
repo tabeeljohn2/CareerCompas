@@ -45,6 +45,13 @@ export default function ResultsPage() {
         <h1 className="text-2xl font-bold">Your top career matches</h1>
         {data.careers.map((c) => <CareerCard key={c.title} career={c} />)}
       </section>
+            {data.advice && (
+        <section className="space-y-2 rounded-lg border border-gray-700 p-4">
+          <h2 className="text-xl font-bold">Why these matches?</h2>
+          <p className="whitespace-pre-line text-sm text-gray-300">{data.advice}</p>
+          <p className="text-xs text-gray-500">AI-generated guidance. Treat it as a starting point, not a guarantee.</p>
+        </section>
+      )}
       <section className="space-y-3">
         <h2 className="text-xl font-bold">Your learning roadmap</h2>
         <RoadmapChecklist key={data.recommendation_id} initialItems={data.roadmap} />

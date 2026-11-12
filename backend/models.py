@@ -35,8 +35,8 @@ class Recommendation(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     careers_json: Mapped[str] = mapped_column(Text)
+    advice_text: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now)
-
 
 class ProgressItem(Base):
     __tablename__ = "progress_items"
