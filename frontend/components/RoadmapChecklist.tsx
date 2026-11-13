@@ -24,22 +24,51 @@ export default function RoadmapChecklist({ initialItems }: { initialItems: Roadm
   const percent = items.length ? Math.round((doneCount / items.length) * 100) : 0;
 
   return (
-    <div>
-      <p className="text-sm text-gray-400">{percent}% complete</p>
-      <div className="mt-1 h-2 rounded bg-gray-700">
-        <div className="h-2 rounded bg-green-600" style={{ width: `${percent}%` }} />
+    <div className="rounded-3xl bg-[#1f1f1f] p-6 text-white shadow-xl">
+      <div className="flex items-end justify-between">
+        <h2 className="text-2xl font-light">Learning roadmap</h2>
+        <span className="text-4xl font-light leading-none">
+          {doneCount}/{items.length}
+        </span>
       </div>
-      <ul className="mt-4 space-y-2">
-        {items.map((i) => (
+
+      <div className="mt-4 h-2 rounded-full bg-white/15">
+        <div
+          className="h-2 rounded-full bg-[#ffd95a] transition-all"
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+      <p className="mt-1 text-xs text-white/60">{percent}% complete</p>
+
+      <ul className="mt-5 space-y-2">
+        {items.map((i, idx) => (
           <li key={i.id}>
-            <label className="flex cursor-pointer items-center gap-3">
-              <input type="checkbox" checked={i.is_done} onChange={() => toggle(i)} />
-              <span className={i.is_done ? "text-gray-500 line-through" : ""}>{i.title}</span>
-            </label>
+            <button
+              type="button"
+              role="checkbox"
+              aria-checked={i.is_done}
+              onClick={() => toggle(i)}
+              className="flex w-full items-center gap-3 rounded-2xl p-2 text-left hover:bg-white/5"
+            >
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/10 text-sm">
+                {idx + 1}
+              </span>
+              <span className={`flex-1 text-sm ${i.is_done ? "text-white/40 line-through" : ""}`}>
+                {i.title}
+              </span>
+              <span
+                className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs ${
+                  i.is_done ? "bg-[#ffd95a] text-black" : "bg-white/15"
+                }`}
+              >
+                {i.is_done ? "✓" : ""}
+              </span>
+            </button>
           </li>
         ))}
       </ul>
-      {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+
+      {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
     </div>
   );
 }

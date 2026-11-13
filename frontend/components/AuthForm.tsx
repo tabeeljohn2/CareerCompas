@@ -31,18 +31,37 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
     }
   }
 
-  const inputClass = "w-full rounded border border-gray-600 bg-transparent px-3 py-2";
+  const inputClass =
+    "w-full rounded-full border border-black/10 bg-white/70 px-5 py-3 outline-none placeholder:text-[#8a8a8a] focus:border-black/40";
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto mt-12 max-w-sm space-y-4 px-4">
-      <h1 className="text-2xl font-bold">{mode === "login" ? "Log in" : "Create your account"}</h1>
-      <input className={inputClass} type="email" placeholder="Email"
-        value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input className={inputClass} type="password" placeholder="Password (8+ characters)"
-        value={password} onChange={(e) => setPassword(e.target.value)} />
-      {error && <p className="text-sm text-red-400">{error}</p>}
-      <button type="submit" disabled={loading}
-        className="w-full rounded bg-blue-600 py-2 text-white hover:bg-blue-500 disabled:opacity-50">
+    <form
+      onSubmit={handleSubmit}
+      className="glass mx-auto mt-6 max-w-sm space-y-4 rounded-3xl p-8"
+    >
+      <h1 className="text-3xl font-light">
+        {mode === "login" ? "Welcome back" : "Create your account"}
+      </h1>
+      <input
+        className={inputClass}
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <input
+        className={inputClass}
+        type="password"
+        placeholder="Password (8+ characters)"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      {error && <p className="text-sm text-red-600">{error}</p>}
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full rounded-full bg-[#1c1c1c] py-3 text-white hover:bg-black disabled:opacity-50"
+      >
         {loading ? "Please wait..." : mode === "login" ? "Log in" : "Sign up"}
       </button>
     </form>

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getToken, submitProfile } from "../lib/api";
 
-// Example options. In Phase 4 these must match the features your model is trained on.
+// Example options. These must match career_data.py.
 const EDUCATION = ["High school", "Bachelor's (in progress)", "Bachelor's", "Master's", "Other"];
 const SKILLS = ["Python", "JavaScript", "SQL", "Excel", "Communication", "Design",
   "Data analysis", "Machine learning", "Writing", "Project management"];
@@ -22,10 +22,16 @@ function Chips({ options, selected, onToggle }: {
   return (
     <div className="flex flex-wrap gap-2">
       {options.map((o) => (
-        <button key={o} type="button" onClick={() => onToggle(o)}
-          className={`rounded-full border px-3 py-1 text-sm ${
-            selected.includes(o) ? "border-blue-500 bg-blue-600 text-white" : "border-gray-600"
-          }`}>
+        <button
+          key={o}
+          type="button"
+          onClick={() => onToggle(o)}
+          className={`rounded-full border px-4 py-2 text-sm transition ${
+            selected.includes(o)
+              ? "border-[#1c1c1c] bg-[#1c1c1c] text-white"
+              : "border-black/10 bg-white/60 hover:bg-white"
+          }`}
+        >
           {o}
         </button>
       ))}
@@ -69,69 +75,95 @@ export default function ProfileWizard() {
     } catch (err) {
       const m = (err as Error).message;
       if (m === "NOT_LOGGED_IN") return router.push("/login");
-      setError(
-        err instanceof TypeError
-          ? "Cannot reach the server. Is the backend running?"
-          : m
-      );
+      setError(err instanceof TypeError ? "Cannot reach the server. Is the backend running?" : m);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="mx-auto mt-12 max-w-lg space-y-6 px-4">
-      <p className="text-sm text-gray-400">
-        Step {step + 1} of 4: {STEP_TITLES[step]}
-      </p>
-      <div className="h-2 rounded bg-gray-700">
-        <div className="h-2 rounded bg-blue-600" style={{ width: `${((step + 1) / 4) * 100}%` }} />
+    <div className="mx-auto max-w-2xl space-y-6">
+      <h1 className="text-4xl font-light tracking-tight sm:text-5xl">Build your profile</h1>
+
+      <div className="flex flex-wrap gap-2">
+        {STEP_TITLES.map((t, i) => (
+          <span
+            key={t}
+            className={`rounded-full px-5 py-2 text-sm ${
+              i === step
+                ? "bg-[#1c1c1c] text-white"
+                : i < step
+                ? "bg-[#ffd95a]"
+                : "hatch border border-black/10"
+            }`}
+          >
+            {t}
+          </span>
+        ))}
       </div>
 
-      {step === 0 && (
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold">What is your education level?</h1>
-          <select value={education} onChange={(e) => setEducation(e.target.value)}
-            className="w-full rounded border border-gray-600 bg-transparent px-3 py-2">
-            <option value="" className="text-black">Select...</option>
-            {EDUCATION.map((o) => <option key={o} value={o} className="text-black">{o}</option>)}
-          </select>
-        </div>
-      )}
-      {step === 1 && (
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold">Which skills do you have?</h1>
-          <Chips options={SKILLS} selected={skills} onToggle={(o) => setSkills(toggle(skills, o))} />
-        </div>
-      )}
-      {step === 2 && (
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold">What are you interested in?</h1>
-          <Chips options={INTERESTS} selected={interests} onToggle={(o) => setInterests(toggle(interests, o))} />
-        </div>
-      )}
-      {step === 3 && (
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold">Any career goals? (optional)</h1>
-          <textarea value={goals} onChange={(e) => setGoals(e.target.value)} rows={4}
-            className="w-full rounded border border-gray-600 bg-transparent px-3 py-2"
-            placeholder="For example: I want to work remotely in tech..." />
-          <p className="text-xs text-gray-500">{goals.length}/500</p>
-        </div>
-      )}
+      <div className="glass space-y-5 rounded-3xl p-6 sm:p-8">
+        {step === 0 && (
+          <div className="space-y-3">
+            <h2 className="text-2xl font-light">What is your education level?</h2>
+            <select
+              value={education}
+              onChange={(e) => setEducation(e.target.value)}
+              className="w-full rounded-full border border-black/10 bg-white/70 px-5 py-3 outline-none"
+            >
+              <option value="">Select...</option>
+              {EDUCATION.map((o) => (
+                <option key={o} value={o}>{o}</option>
+              ))}
+            </select>
+          </div>
+        )}
+        {step === 1 && (
+          <div className="space-y-3">
+            <h2 className="text-2xl font-light">Which skills do you have?</h2>
+            <Chips options={SKILLS} selected={skills} onToggle={(o) => setSkills(toggle(skills, o))} />
+          </div>
+        )}
+        {step === 2 && (
+          <div className="space-y-3">
+            <h2 className="text-2xl font-light">What are you interested in?</h2>
+            <Chips options={INTERESTS} selected={interests} onToggle={(o) => setInterests(toggle(interests, o))} />
+          </div>
+        )}
+        {step === 3 && (
+          <div className="space-y-3">
+            <h2 className="text-2xl font-light">Any career goals? (optional)</h2>
+            <textarea
+              value={goals}
+              onChange={(e) => setGoals(e.target.value)}
+              rows={4}
+              className="w-full rounded-3xl border border-black/10 bg-white/70 px-5 py-3 outline-none"
+              placeholder="For example: I want to work remotely in tech..."
+            />
+            <p className="text-xs text-[#6b6b6b]">{goals.length}/500</p>
+          </div>
+        )}
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <p className="text-sm text-red-600">{error}</p>}
 
-      <div className="flex justify-between">
-        <button type="button" disabled={step === 0 || loading}
-          onClick={() => { setError(""); setStep(step - 1); }}
-          className="rounded border border-gray-600 px-4 py-2 disabled:opacity-40">
-          Back
-        </button>
-        <button type="button" onClick={next} disabled={loading}
-          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-500 disabled:opacity-50">
-          {loading ? "Finding your matches..." : step === 3 ? "Finish" : "Next"}
-        </button>
+        <div className="flex justify-between pt-2">
+          <button
+            type="button"
+            disabled={step === 0 || loading}
+            onClick={() => { setError(""); setStep(step - 1); }}
+            className="rounded-full border border-black/30 px-6 py-3 disabled:opacity-40"
+          >
+            Back
+          </button>
+          <button
+            type="button"
+            onClick={next}
+            disabled={loading}
+            className="rounded-full bg-[#1c1c1c] px-8 py-3 text-white hover:bg-black disabled:opacity-50"
+          >
+            {loading ? "Finding your matches..." : step === 3 ? "Finish" : "Next"}
+          </button>
+        </div>
       </div>
     </div>
   );
